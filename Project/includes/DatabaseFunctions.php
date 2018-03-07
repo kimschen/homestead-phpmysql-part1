@@ -1,36 +1,5 @@
 <?php
 
-/*
--------------------------------------------------------------
-| Dependency injection										|
--------------------------------------------------------------
-| In practical terms, it's a method for making a single 	|
-| variable available in multiple locations. 				|
--------------------------------------------------------------
-*/
-
-// Return total number of jokes
-function totalJokes($pdo) {
-
-	// Call the query function and pass it the empty $parameters array
-	$query = query($pdo, 'SELECT COUNT(*) FROM `joke`');
-	$row = $query->fetch();
-
-	return $row[0];
-}
-
-// Get joke
-function getJoke($pdo, $id) {
-
-	// Create the array of $parameters for use in the query function
-	$parameters = [':id' => $id];
-
-	// Call the query function and provide the $parameters array
-	$query = query($pdo, 'SELECT * FROM `joke` WHERE `id` = :id', $parameters);
-
-	return $query->fetch();
-}
-
 // Bind and execute given parameters
 function query($pdo, $sql, $parameters = []) {
 
@@ -38,61 +7,6 @@ function query($pdo, $sql, $parameters = []) {
 	$query->execute($parameters);
 
 	return $query;
-}
-
-// Add joke
-function insertJoke ($pdo, $fields) {
-
-	$query = 'INSERT INTO `joke` (';
-
-	foreach ($fields as $key => $value) {
-		$query .= '`' . $key . '`,';
-	}
-
-	$query = rtrim($query, ',');
-	$query .= ') VALUES (';
-
-	foreach ($fields as $key => $value) {
-		$query .= ':' . $key . ',';
-	}
-
-	$query = rtrim($query, ',');
-	$query .= ')';
-
-	$fields = processDates($fields);
-
-	query($pdo, $query, $fields);
-}
-
-// Edit joke
-function updateJoke($pdo, $fields) {
-
-	$query = 'UPDATE `joke` SET';
-
-    foreach ($fields as $key => $value) {
-    	$query .= '`' . $key . '` = :' . $key . ',';
-	}
-
-	$query = rtrim($query, ',');
-	$query .= ' WHERE `id` = :primaryKey';
-
-
-	// Set the :primaryKey variable
-	$fields['primaryKey'] = $fields['id'];
-
-	$fields = processDates($fields);
-
-	query($pdo, $query, $fields);
-
-}
-
-// Remove joke
-function deleteJoke($pdo, $id) {
-
-	$parameters = [':id' => $id];
-
-	query($pdo,'DELETE FROM `joke`
-				WHERE `id` = :id', $parameters);
 }
 
 function allJokes($pdo) {
@@ -108,6 +22,7 @@ function allJokes($pdo) {
 function processDates($fields) {
 	foreach ($fields as $key => $value) {
 
+		// If value has the same type as DateTime class, set format to Y-m-d
 		if ($value instanceOf DateTime) {
 			$fields[$key] = $value->format('Y-m-d');
 		}
@@ -231,6 +146,7 @@ function findById($pdo, $table, $primaryKey, $value) {
 
 }
 
+// Return total number of jokes
 function total($pdo, $table) {
 
 	// Call the query function and pass it the empty $parameters array

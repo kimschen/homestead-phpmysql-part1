@@ -5,14 +5,13 @@ include __DIR__ . '/../includes/DatabaseFunctions.php';
 
 try {
 
-	if (isset($_POST['joketext'])) {
+	if (isset($_POST['joke'])) {
 
-		save($pdo, 'joke', 'id', [
-			'id' => $_POST['jokeid'],
-			'joketext' => $_POST['joketext'],
-			'authorid' => 1,
-			'jokedate' => new DateTime()
-		]);
+		$joke = $_POST['joke'];
+		$joke['jokedate'] = new DateTime();
+		$joke['authorid'] = 1;
+
+		save($pdo, 'joke', 'id', $joke);
 
 		header ('location: jokes.php');
 
