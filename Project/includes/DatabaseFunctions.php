@@ -9,16 +9,6 @@ function query($pdo, $sql, $parameters = []) {
 	return $query;
 }
 
-function allJokes($pdo) {
-
-	$jokes = query($pdo,'SELECT `joke`.`id`, `joketext`, `jokedate`, `name`, `email`
-						FROM `joke`
-						INNER JOIN `author`
-						ON `authorid` = `author`.`id`');
-
-	return $jokes->fetchAll();
-}
-
 function processDates($fields) {
 	foreach ($fields as $key => $value) {
 
@@ -29,45 +19,6 @@ function processDates($fields) {
 	}
 
 	return $fields;
-
-}
-
-function allAuthors($pdo) {
-
-	$authors = query($pdo, 'SELECT * FROM `author`');
-
-	return $authors->fetchAll();
-}
-
-function deleteAuthor($pdo, $id) {
-
-	$parameters = [':id' => $id];
-
-	query($pdo,'DELETE FROM `author`
-				WHERE `id` = :id', $parameters);
-
-}
-
-function insertAuthor($pdo, $fields) {
-
-	$query = 'INSERT INTO `author` (';
-
-	foreach ($fields as $key => $value) {
-		$query .= '`' . $key . '`,';
-	}
-
-	$query = rtrim($query, ',');
-	$query .= ') VALUES (';
-
-	foreach ($fields as $key => $value) {
-		$query .= ':' . $key . ',';
-	}
-
-	$query = rtrim($query, ',');
-
-	$fields = processDates($fields);
-
-	query($pdo, $query, $fields);
 
 }
 
@@ -146,7 +97,6 @@ function findById($pdo, $table, $primaryKey, $value) {
 
 }
 
-// Return total number of jokes
 function total($pdo, $table) {
 
 	// Call the query function and pass it the empty $parameters array
